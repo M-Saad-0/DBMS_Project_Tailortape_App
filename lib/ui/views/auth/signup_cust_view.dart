@@ -30,7 +30,7 @@ class _SignUpCustViewState extends State<SignUpCustView> {
     TextEditingController passwordController = TextEditingController();
     TextEditingController firstNameController = TextEditingController();
     TextEditingController lastNameController = TextEditingController();
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
+    final GoogleSignIn googleSignIn = GoogleSignIn();
     GlobalKey key = GlobalKey<FormState>();
     bool isDarkMode = ThememodeIdentifier().tell(context);
 
@@ -178,17 +178,21 @@ class _SignUpCustViewState extends State<SignUpCustView> {
                                         email: emailController.text,
                                         password: passwordController.text);
                                 if (user.user != null) {
-                                  collections
+                                  await collections
                                       .collection("Customer")
                                       .doc(user.user!.email)
                                       .set({
                                     "first_name": firstNameController.text,
                                     "last_name": lastNameController.text,
                                   }, SetOptions(merge: true));
+                                  await collections
+                                      .collection("Account")
+                                      .doc(user.user!.uid)
+                                      .set({
+                                    "account": "Customer",
+                                    "id": user.user!.uid
+                                  });
                                   value.serIsLoading(false);
-                                  SharedPreferences pref =
-                                      await SharedPreferences.getInstance();
-                                  pref.setString("accountType", "Customer");
                                   if (context.mounted) {
                                     Navigator.pushNamedAndRemoveUntil(
                                         context,
@@ -217,7 +221,7 @@ class _SignUpCustViewState extends State<SignUpCustView> {
                           borderRadius: BorderRadius.circular(20),
                           onPressed: () async {
                             final GoogleSignInAccount? googleUser =
-                                await _googleSignIn.signIn();
+                                await googleSignIn.signIn();
                             if (googleUser == null) {
                               Message().give(" - ");
                             } else {
@@ -232,16 +236,17 @@ class _SignUpCustViewState extends State<SignUpCustView> {
 
                               final User? user = userCredential.user;
                               final name = user!.displayName!.split(" ");
-                              collections
-                                  .collection("Tailor")
+                              await collections
+                                  .collection("Customer")
                                   .doc(user.uid)
                                   .set({
                                 "first_name": name[0],
                                 "last_name": name[1],
                               }, SetOptions(merge: true));
-                              SharedPreferences pref =
-                                  await SharedPreferences.getInstance();
-                              pref.setString("accountType", "Customer");
+                              await collections
+                                  .collection("Account")
+                                  .doc(user.uid)
+                                  .set({"account": "Customer", "id": user.uid});
                               if (context.mounted) {
                                 Navigator.pushNamedAndRemoveUntil(
                                     context,

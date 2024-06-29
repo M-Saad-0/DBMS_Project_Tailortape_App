@@ -54,7 +54,7 @@ class _SplashViewState extends State<SplashView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SvgPicture.asset(
-              "icons/app_logo.svg",
+              "assets/icons/app_logo.svg",
               width: 200,
               height: 200,
               colorFilter: ColorFilter.mode(

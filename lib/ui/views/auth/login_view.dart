@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -152,19 +153,21 @@ class _LogInViewState extends State<LogInView> {
                               } on FirebaseAuthException catch (e) {
                                 Message().give(e.code);
                               }
-                              SharedPreferences pref =
-                                  await SharedPreferences.getInstance();
-                              v.serIsLoading(false);
-
-                              if (pref.getString("accountType") == "Tailor") {
+                              final data = await FirebaseFirestore.instance
+                                  .collection("Account")
+                                  .where("account",
+                                      isEqualTo: _auth.currentUser!.uid)
+                                  .get();
+                              String accountType =
+                                  data.docs[0].data()["account"];
+                              if (accountType == "Tailor") {
                                 if (context.mounted) {
                                   Navigator.pushNamedAndRemoveUntil(
                                       context,
                                       'tailor',
                                       (Route<dynamic> route) => false);
                                 }
-                              } else if (pref.getString("accountType") ==
-                                  "Customer") {
+                              } else if (accountType == "Customer") {
                                 if (context.mounted) {
                                   Navigator.pushNamedAndRemoveUntil(
                                       context,
@@ -201,17 +204,21 @@ class _LogInViewState extends State<LogInView> {
                                       accessToken: googleAuth.accessToken,
                                       idToken: googleAuth.idToken);
                               await _auth.signInWithCredential(credential);
-                              SharedPreferences pref =
-                                  await SharedPreferences.getInstance();
-                              if (pref.getString("accountType") == "Tailor") {
+                              final data = await FirebaseFirestore.instance
+                                  .collection("Account")
+                                  .where("account",
+                                      isEqualTo: _auth.currentUser!.uid)
+                                  .get();
+                              String accountType =
+                                  data.docs[0].data()["account"];
+                              if (accountType == "Tailor") {
                                 if (context.mounted) {
                                   Navigator.pushNamedAndRemoveUntil(
                                       context,
                                       'tailor',
                                       (Route<dynamic> route) => false);
                                 }
-                              } else if (pref.getString("accountType") ==
-                                  "Customer") {
+                              } else if (accountType == "Customer") {
                                 if (context.mounted) {
                                   Navigator.pushNamedAndRemoveUntil(
                                       context,

@@ -174,7 +174,7 @@ class _SignUpViewState extends State<SignUpView> {
                                         email: emailController.text,
                                         password: passwordController.text);
                                 if (user.user != null) {
-                                  collections
+                                  await collections
                                       .collection("Tailor")
                                       .doc(user.user?.uid)
                                       .set({
@@ -183,10 +183,15 @@ class _SignUpViewState extends State<SignUpView> {
                                     "tailor_id": _auth.currentUser!.uid,
                                     "cost": 800,
                                   });
+                                  await collections
+                                      .collection("Account")
+                                      .doc(user.user!.uid)
+                                      .set({
+                                    "account": "Tailor",
+                                    "id": user.user!.uid
+                                  });
                                   value.serIsLoading(false);
-                                  SharedPreferences pref =
-                                      await SharedPreferences.getInstance();
-                                  pref.setString("accountType", "Tailor");
+
                                   if (context.mounted) {
                                     Navigator.pushNamedAndRemoveUntil(
                                         context,
@@ -229,16 +234,17 @@ class _SignUpViewState extends State<SignUpView> {
 
                               final User? user = userCredential.user;
                               final name = user!.displayName!.split(" ");
-                              collections
+                              await collections
                                   .collection("Tailor")
                                   .doc(user.uid)
                                   .set({
                                 "first_name": name[0],
                                 "last_name": name[1],
                               });
-                              SharedPreferences pref =
-                                  await SharedPreferences.getInstance();
-                              pref.setString("accountType", "Tailor");
+                              await collections
+                                  .collection("Account")
+                                  .doc(user.uid)
+                                  .set({"account": "Tailor", "id": user.uid});
                               if (context.mounted) {
                                 Navigator.pushNamedAndRemoveUntil(context,
                                     'tailor', (Route<dynamic> route) => false);
