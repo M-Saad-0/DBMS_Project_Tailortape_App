@@ -27,6 +27,7 @@ class _MeasurementViewState extends State<MeasurementView> {
   final TextEditingController _trouserWidthController = TextEditingController();
   final TextEditingController _waistController = TextEditingController();
   final TextEditingController _userEmail = TextEditingController();
+  final TextEditingController _userName = TextEditingController();
   Color pickerColor = const Color(0xff443a49);
   Color currentColor = const Color(0xff443a49);
   @override
@@ -39,6 +40,14 @@ class _MeasurementViewState extends State<MeasurementView> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              TextField(
+                controller: _userName,
+                decoration: const InputDecoration(
+                  labelText: 'Customer Name',
+                ),
+                keyboardType: TextInputType.name,
+              ),
+              HelperFunctions().vSpace(10),
               TextField(
                 controller: _userEmail,
                 decoration: const InputDecoration(
@@ -222,7 +231,8 @@ class _MeasurementViewState extends State<MeasurementView> {
                 onPressed: _saveMeasurements,
                 child: Text(
                   'Save Measurements',
-                  style: TextStyle(color: isDark ? Colors.black : Colors.white),
+                  style:
+                      TextStyle(color: !isDark ? Colors.black : Colors.white),
                 ),
               ),
             ],
@@ -233,6 +243,7 @@ class _MeasurementViewState extends State<MeasurementView> {
   }
 
   void _saveMeasurements() async {
+    List<String> names = _userName.text.toString().split(" ");
     bool hasOrNot = await hasNameFields();
     String data = combineMeasurementData();
     final User user = FirebaseAuth.instance.currentUser!;
@@ -244,8 +255,8 @@ class _MeasurementViewState extends State<MeasurementView> {
         "email": _userEmail.text,
         "measurements": data,
         "tailor_id": user.uid,
-        "first_name": "Not a",
-        "last_name": " User Yet",
+        "first_name": names[0],
+        "last_name": names[1],
         "no_of_orders": 1
       });
       String uid = const Uuid().v4();
@@ -292,8 +303,8 @@ class _MeasurementViewState extends State<MeasurementView> {
         "email": _userEmail.text,
         "measurements": data,
         "tailor_id": user.uid,
-        "first_name": "Not a ",
-        "last_name": "User Yet",
+        "first_name": names[0],
+        "last_name": names[1],
         "no_of_orders": 1
       });
       String uid = const Uuid().v4();

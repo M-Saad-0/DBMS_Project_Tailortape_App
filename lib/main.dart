@@ -8,6 +8,8 @@ import 'package:tailortape/provider/theme_provider.dart';
 import 'package:tailortape/theme/theme.dart';
 import 'package:tailortape/ui/views/app_view/cutomer_view.dart';
 import 'package:tailortape/ui/views/app_view/measurement_view.dart';
+// import 'package:tailortape/ui/views/app_view/cutomer_view.dart';
+// import 'package:tailortape/ui/views/app_view/measurement_view.dart';
 import 'package:tailortape/ui/views/app_view/tailor_view.dart';
 import 'package:tailortape/ui/views/auth/account_type_view.dart';
 import 'package:tailortape/ui/views/auth/forgot_password.dart';
@@ -19,7 +21,7 @@ import 'package:tailortape/ui/views/auth/splash_view.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: DefaultFirebaseOptions.web,
   );
   runApp(MyApp());
 }
@@ -41,9 +43,14 @@ class MyApp extends StatelessWidget {
           builder: (context) {
             final themeChanger = Provider.of<ThemeProvider>(context);
             return MaterialApp(
-              theme: ThemeClass().darkTheme,
+              debugShowCheckedModeBanner: false,
+              theme: themeChanger.themeName == "Light"
+                  ? ThemeClass().lightTheme
+                  : ThemeClass().darkTheme,
               darkTheme: ThemeClass().darkTheme,
-              themeMode: themeChanger.themeMode,
+              themeMode: themeChanger.themeName == "Light"
+                  ? ThemeMode.light
+                  : ThemeMode.dark,
               initialRoute: "splash",
               routes: {
                 'splash': (context) => const SplashView(),

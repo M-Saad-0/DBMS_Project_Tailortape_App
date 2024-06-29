@@ -73,13 +73,18 @@ class _TailorViewState extends State<TailorView> {
                                     ),
                                     actions: [
                                       TextButton(
-                                          onPressed: () {
-                                            FirebaseFirestore.instance
+                                          onPressed: () async {
+                                            await FirebaseFirestore.instance
+                                                .collection("Tailor")
                                                 .doc(user!.uid)
                                                 .set({
-                                              "cost": int.parse(
-                                                  _priceController.text)
+                                              "cost": int.parse(_priceController
+                                                  .text
+                                                  .toString())
                                             }, SetOptions(merge: true));
+                                            Navigator.of(context).pop();
+                                            Message().give(
+                                                "Your price is set to ${_priceController.text}");
                                           },
                                           child: const Text("Set"))
                                     ],
@@ -95,58 +100,60 @@ class _TailorViewState extends State<TailorView> {
                           Navigator.of(context).pop();
                           showDialog(
                               context: context,
-                              builder: (context) => SizedBox(
-                                    height: 300,
-                                    child: AlertDialog(
-                                      title: Row(
-                                        children: [
-                                          SvgPicture.asset(
-                                            width: 70,
-                                            height: 70,
-                                            "./icons/app_logo.svg",
-                                            colorFilter: ColorFilter.mode(
-                                                !isDarkMode
-                                                    ? const Color(0xff000000)
-                                                    : const Color(0xffffffff),
-                                                BlendMode.srcIn),
-                                          ),
-                                          const Text("Tailortape")
-                                        ],
-                                      ),
-                                      content: const Column(
-                                        children: [
-                                          Text("App Version:  1.0.0"),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text(
-                                            "Made By",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600),
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text("Muhammad Saad   21pwcse1997"),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text(
-                                              "Muhammad Umar Jan   21pwcse2000"),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text("Hamza   21pwcse1990"),
-                                        ],
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: const Text("Close"))
+                              builder: (context) => AlertDialog(
+                                    title: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          width: 70,
+                                          height: 70,
+                                          "./icons/app_logo.svg",
+                                          colorFilter: ColorFilter.mode(
+                                              !isDarkMode
+                                                  ? const Color(0xff000000)
+                                                  : const Color(0xffffffff),
+                                              BlendMode.srcIn),
+                                        ),
+                                        const Text("Tailortape 1.0.0")
                                       ],
                                     ),
+                                    // ignore: sized_box_for_whitespace
+                                    content: Container(
+                                      height: 150,
+                                      child: const Center(
+                                        child: Column(
+                                          children: [
+                                            Text("App Version:  1.0.0"),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text(
+                                              "Made By",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text("Muhammad Saad 1997"),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text("Muhammad Umar Jan 2000"),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text("Hamza 1990"),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text("Close"))
+                                    ],
                                   ));
                         },
                         title: const Text("About"),
@@ -195,7 +202,7 @@ class _TailorViewState extends State<TailorView> {
                                           CrossAxisAlignment.center,
                                       children: [
                                         Text(
-                                            "${snapshot.data!.docs[index]["first_name"]}${snapshot.data!.docs[index]["last_name"]} ",
+                                            "${snapshot.data!.docs[index]["first_name"]} ${snapshot.data!.docs[index]["last_name"]} ",
                                             style: TextStyles().style(500, 25)),
                                         Padding(
                                           padding: const EdgeInsets.all(10),
@@ -472,7 +479,7 @@ class _TailorViewState extends State<TailorView> {
                                               style: TextStyle(
                                                   color: isDarkMode
                                                       ? Colors.black
-                                                      : Colors.black),
+                                                      : Colors.white),
                                             ))
                                       ],
                                     ));
@@ -484,7 +491,7 @@ class _TailorViewState extends State<TailorView> {
                             .data!.docs[index]["measurements"]
                             .toString()),
                         title: Text(
-                            "${snapshot.data!.docs[index]["first_name"]}${snapshot.data!.docs[index]["last_name"]}"),
+                            "${snapshot.data!.docs[index]["first_name"]} ${snapshot.data!.docs[index]["last_name"]}"),
                         leading: const Icon(Icons.person),
                         trailing: PopupMenuButton(itemBuilder: (context) {
                           return [

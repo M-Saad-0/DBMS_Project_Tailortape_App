@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tailortape/provider/theme_provider.dart';
 import 'package:tailortape/ui/widgets/custome_list_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,7 +16,7 @@ class SettingView extends StatefulWidget {
 
 class _SettingViewState extends State<SettingView> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleAuth = GoogleSignIn();
+  // final GoogleSignIn _googleAuth = GoogleSignIn();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
@@ -39,6 +38,7 @@ class _SettingViewState extends State<SettingView> {
         final themeMode = themeDataModel.themeMode == ThemeMode.light
             ? ThemeMode.dark
             : ThemeMode.light;
+        debugPrint(themeDataModel.themeMode.toString());
         final themeName =
             themeDataModel.themeName == "Light" ? "Dark" : "Light";
         themeDataModel.setThemeIcon(iconData);
@@ -49,7 +49,7 @@ class _SettingViewState extends State<SettingView> {
 
       void signOut() async {
         if (_auth.currentUser?.providerData[0].providerId == 'google.com') {
-          await _googleAuth.signOut();
+          // await _googleAuth.signOut();
         } else {
           await _auth.signOut();
         }
@@ -61,8 +61,11 @@ class _SettingViewState extends State<SettingView> {
       }
 
       void deleteUser() async {
-        final SharedPreferences pref = await SharedPreferences.getInstance();
-        String? type = pref.getString("accountType");
+        final data = await FirebaseFirestore.instance
+            .collection("Account")
+            .where("id", isEqualTo: _auth.currentUser!.uid)
+            .get();
+        String type = data.docs[0].data()["account"];
 
         if (type == "Customer") {
           final collectionRef = _firestore.collection('Customer');

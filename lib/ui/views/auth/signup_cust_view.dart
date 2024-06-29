@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tailortape/provider/loading_provider.dart';
 import 'package:tailortape/ui/widgets/custom_elevated_button.dart';
-import 'package:tailortape/ui/widgets/custom_google_button.dart';
+// import 'package:tailortape/ui/widgets/custom_google_button.dart';
 import 'package:tailortape/utils/constants/test_styles.dart';
 import 'package:tailortape/utils/helper_functions.dart';
 import 'package:tailortape/utils/thememode_identifier.dart';
@@ -30,7 +30,7 @@ class _SignUpCustViewState extends State<SignUpCustView> {
     TextEditingController passwordController = TextEditingController();
     TextEditingController firstNameController = TextEditingController();
     TextEditingController lastNameController = TextEditingController();
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+    // final GoogleSignIn googleSignIn = GoogleSignIn();
     GlobalKey key = GlobalKey<FormState>();
     bool isDarkMode = ThememodeIdentifier().tell(context);
 
@@ -178,13 +178,26 @@ class _SignUpCustViewState extends State<SignUpCustView> {
                                         email: emailController.text,
                                         password: passwordController.text);
                                 if (user.user != null) {
-                                  await collections
-                                      .collection("Customer")
-                                      .doc(user.user!.email)
-                                      .set({
-                                    "first_name": firstNameController.text,
-                                    "last_name": lastNameController.text,
-                                  }, SetOptions(merge: true));
+                                  bool check = await checkDocumentExists(
+                                      user.user!.email!);
+                                  if (check) {
+                                    await collections
+                                        .collection("Customer")
+                                        .doc(user.user!.email)
+                                        .set({
+                                      "first_name": firstNameController.text,
+                                      "last_name": lastNameController.text,
+                                    }, SetOptions(merge: true));
+                                  } else {
+                                    await collections
+                                        .collection("Customer")
+                                        .doc(user.user!.email)
+                                        .set({
+                                      "first_name": firstNameController.text,
+                                      "last_name": lastNameController.text,
+                                      "tailor_id": ""
+                                    }, SetOptions(merge: true));
+                                  }
                                   await collections
                                       .collection("Account")
                                       .doc(user.user!.uid)
@@ -202,6 +215,7 @@ class _SignUpCustViewState extends State<SignUpCustView> {
                                 }
                               } on FirebaseAuthException catch (e) {
                                 Message().give(e.code);
+                                value.serIsLoading(false);
                               }
                             },
                             width: 250,
@@ -214,55 +228,56 @@ class _SignUpCustViewState extends State<SignUpCustView> {
                                       isDarkMode ? Colors.black : Colors.white),
                             ));
                       }),
-                      HelperFunctions().vSpace(15),
-                      const Text("or"),
-                      HelperFunctions().vSpace(15),
-                      GoogleButton(
-                          borderRadius: BorderRadius.circular(20),
-                          onPressed: () async {
-                            final GoogleSignInAccount? googleUser =
-                                await googleSignIn.signIn();
-                            if (googleUser == null) {
-                              Message().give(" - ");
-                            } else {
-                              final GoogleSignInAuthentication googleAuth =
-                                  await googleUser.authentication;
-                              final AuthCredential credential =
-                                  GoogleAuthProvider.credential(
-                                      accessToken: googleAuth.accessToken,
-                                      idToken: googleAuth.idToken);
-                              final UserCredential userCredential =
-                                  await _auth.signInWithCredential(credential);
+                      // HelperFunctions().vSpace(15),
+                      // const Text("or"),
+                      // HelperFunctions().vSpace(15),
+                      // GoogleButton(
+                      //     borderRadius: BorderRadius.circular(20),
+                      //     onPressed: () async {
+                      //       final GoogleSignInAccount? googleUser =
+                      //           await googleSignIn.signIn();
+                      //       if (googleUser == null) {
+                      //         Message().give(" - ");
+                      //       } else {
+                      //         final GoogleSignInAuthentication googleAuth =
+                      //             await googleUser.authentication;
+                      //         final AuthCredential credential =
+                      //             GoogleAuthProvider.credential(
+                      //                 accessToken: googleAuth.accessToken,
+                      //                 idToken: googleAuth.idToken);
+                      //         final UserCredential userCredential =
+                      //             await _auth.signInWithCredential(credential);
 
-                              final User? user = userCredential.user;
-                              final name = user!.displayName!.split(" ");
-                              await collections
-                                  .collection("Customer")
-                                  .doc(user.uid)
-                                  .set({
-                                "first_name": name[0],
-                                "last_name": name[1],
-                              }, SetOptions(merge: true));
-                              await collections
-                                  .collection("Account")
-                                  .doc(user.uid)
-                                  .set({"account": "Customer", "id": user.uid});
-                              if (context.mounted) {
-                                Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    'customer',
-                                    (Route<dynamic> route) => false);
-                              }
-                            }
-                          },
-                          width: 250,
-                          height: 50,
-                          child: Text(
-                            "Sign Up with Google",
-                            style: TextStyle(
-                                color:
-                                    isDarkMode ? Colors.white : Colors.black),
-                          )),
+                      //         final User? user = userCredential.user;
+                      //         final name = user!.displayName!.split(" ");
+                      //         await collections
+                      //             .collection("Customer")
+                      //             .doc(user.email)
+                      //             .set({
+                      //           "first_name": name[0],
+                      //           "last_name": name[1],
+                      //           "tailor_id": ""
+                      //         }, SetOptions(merge: true));
+                      //         await collections
+                      //             .collection("Account")
+                      //             .doc(user.uid)
+                      //             .set({"account": "Customer", "id": user.uid});
+                      //         if (context.mounted) {
+                      //           Navigator.pushNamedAndRemoveUntil(
+                      //               context,
+                      //               'customer',
+                      //               (Route<dynamic> route) => false);
+                      //         }
+                      //       }
+                      //     },
+                      //     width: 250,
+                      //     height: 50,
+                      //     child: Text(
+                      //       "Sign Up with Google",
+                      //       style: TextStyle(
+                      //           color:
+                      //               isDarkMode ? Colors.white : Colors.black),
+                      //     )),
                       HelperFunctions().vSpace(15),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -283,11 +298,57 @@ class _SignUpCustViewState extends State<SignUpCustView> {
                     ],
                   ),
                 ),
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Wrap(
+                    children: [
+                      Text("You can try these demo accounts for "),
+                      InkWell(
+                        onTap: () async {
+                          await _auth.signInWithEmailAndPassword(
+                              email: "msad@gmail.com", password: "1234567");
+                          Navigator.pushNamedAndRemoveUntil(context, "tailor",
+                              (Route<dynamic> route) => false);
+                        },
+                        child: Text(
+                          "Tailor",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                      ),
+                      Text(" and "),
+                      InkWell(
+                        onTap: () async {
+                          Message().give(
+                              "Note: The name that shows here is name of the tailor");
+                          await _auth.signInWithEmailAndPassword(
+                              email: "azhar@gmail.com", password: "password");
+                          Navigator.pushNamedAndRemoveUntil(context, "customer",
+                              (Route<dynamic> route) => false);
+                        },
+                        child: Text(
+                          "Customer",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                      ),
+                      Text(" with some dummy data."),
+                    ],
+                  ),
+                )
               ],
             ),
           ),
         ),
       ),
     ));
+  }
+
+  Future<bool> checkDocumentExists(String email) async {
+    DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
+        .collection("Customer")
+        .doc(email)
+        .get();
+    return docSnapshot.exists;
   }
 }

@@ -2,12 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tailortape/provider/loading_provider.dart';
 import 'package:tailortape/ui/widgets/custom_elevated_button.dart';
-import 'package:tailortape/ui/widgets/custom_google_button.dart';
+// import 'package:tailortape/ui/widgets/custom_google_button.dart';
 import 'package:tailortape/utils/constants/test_styles.dart';
 import 'package:tailortape/utils/helper_functions.dart';
 import 'package:tailortape/utils/thememode_identifier.dart';
@@ -30,7 +29,7 @@ class _SignUpViewState extends State<SignUpView> {
     TextEditingController passwordController = TextEditingController();
     TextEditingController firstNameController = TextEditingController();
     TextEditingController lastNameController = TextEditingController();
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
+    // final GoogleSignIn _googleSignIn = GoogleSignIn();
     GlobalKey key = GlobalKey<FormState>();
     bool isDarkMode = ThememodeIdentifier().tell(context);
 
@@ -212,53 +211,53 @@ class _SignUpViewState extends State<SignUpView> {
                                       isDarkMode ? Colors.black : Colors.white),
                             ));
                       }),
-                      HelperFunctions().vSpace(15),
-                      const Text("or"),
-                      HelperFunctions().vSpace(15),
-                      GoogleButton(
-                          borderRadius: BorderRadius.circular(20),
-                          onPressed: () async {
-                            final GoogleSignInAccount? googleUser =
-                                await _googleSignIn.signIn();
-                            if (googleUser == null) {
-                              Message().give(" - ");
-                            } else {
-                              final GoogleSignInAuthentication googleAuth =
-                                  await googleUser.authentication;
-                              final AuthCredential credential =
-                                  GoogleAuthProvider.credential(
-                                      accessToken: googleAuth.accessToken,
-                                      idToken: googleAuth.idToken);
-                              final UserCredential userCredential =
-                                  await _auth.signInWithCredential(credential);
+                      // HelperFunctions().vSpace(15),
+                      // const Text("or"),
+                      // HelperFunctions().vSpace(15),
+                      // GoogleButton(
+                      //     borderRadius: BorderRadius.circular(20),
+                      //     onPressed: () async {
+                      //       final GoogleSignInAccount? googleUser =
+                      //           await _googleSignIn.signIn();
+                      //       if (googleUser == null) {
+                      //         Message().give(" - ");
+                      //       } else {
+                      //         final GoogleSignInAuthentication googleAuth =
+                      //             await googleUser.authentication;
+                      //         final AuthCredential credential =
+                      //             GoogleAuthProvider.credential(
+                      //                 accessToken: googleAuth.accessToken,
+                      //                 idToken: googleAuth.idToken);
+                      //         final UserCredential userCredential =
+                      //             await _auth.signInWithCredential(credential);
 
-                              final User? user = userCredential.user;
-                              final name = user!.displayName!.split(" ");
-                              await collections
-                                  .collection("Tailor")
-                                  .doc(user.uid)
-                                  .set({
-                                "first_name": name[0],
-                                "last_name": name[1],
-                              });
-                              await collections
-                                  .collection("Account")
-                                  .doc(user.uid)
-                                  .set({"account": "Tailor", "id": user.uid});
-                              if (context.mounted) {
-                                Navigator.pushNamedAndRemoveUntil(context,
-                                    'tailor', (Route<dynamic> route) => false);
-                              }
-                            }
-                          },
-                          width: 250,
-                          height: 50,
-                          child: Text(
-                            "Sign Up with Google",
-                            style: TextStyle(
-                                color:
-                                    isDarkMode ? Colors.white : Colors.black),
-                          )),
+                      //         final User? user = userCredential.user;
+                      //         final name = user!.displayName!.split(" ");
+                      //         await collections
+                      //             .collection("Tailor")
+                      //             .doc(user.uid)
+                      //             .set({
+                      //           "first_name": name[0],
+                      //           "last_name": name[1],
+                      //         });
+                      //         await collections
+                      //             .collection("Account")
+                      //             .doc(user.uid)
+                      //             .set({"account": "Tailor", "id": user.uid});
+                      //         if (context.mounted) {
+                      //           Navigator.pushNamedAndRemoveUntil(context,
+                      //               'tailor', (Route<dynamic> route) => false);
+                      //         }
+                      //       }
+                      //     },
+                      //     width: 250,
+                      //     height: 50,
+                      //     child: Text(
+                      //       "Sign Up with Google",
+                      //       style: TextStyle(
+                      //           color:
+                      //               isDarkMode ? Colors.white : Colors.black),
+                      //     )),
                       HelperFunctions().vSpace(15),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
